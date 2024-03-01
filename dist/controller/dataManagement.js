@@ -1,0 +1,80 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.dataManagement = void 0;
+const user_1 = require("../model/user");
+class dataManagement {
+    static async add_user(req, res) {
+        try {
+            const { name, mobile, address, email } = req.body;
+            if (!name) {
+                return res.status(400).json({ message: "Please enter name" });
+            }
+            else if (!mobile) {
+                return res.status(400).json({ message: "Please enter mobile number" });
+            }
+            else if (!address) {
+                return res.status(400).json({ message: "Please enter address" });
+            }
+            else if (!email) {
+                return res.status(400).json({ message: "Please enter email" });
+            }
+            const check_data = await user_1.UserModel.find();
+            if (check_data.length == 0) {
+                await new user_1.UserModel({
+                    name,
+                    mobile,
+                    address,
+                    email,
+                })
+                    .save()
+                    .then((newdata) => newdata.toObject());
+                return res.status(201).json({ message: "Data added successfully!" });
+            }
+            const addCount = 1 + check_data[0].add_count;
+            const old_sr = check_data[0].sr;
+            const UpdateData = await user_1.UserModel.findOneAndReplace({ sr: old_sr }, { name, email, mobile, address, add_count: addCount });
+            if (!UpdateData) {
+                return res
+                    .status(400)
+                    .json({ message: "Unable to Replace existing data!" });
+            }
+            return res.status(201).json({ message: "New record added successfully!" });
+        }
+        catch (error) {
+            console.log(error);
+            return res.status(400).json({ message: "Something went wrong!" });
+        }
+    }
+    static async update_user(req, res) {
+        const id = req.params.id;
+        const newData = req.body;
+        try {
+            const user = await user_1.UserModel.findByIdAndUpdate(id, { $inc: { update_count: 1 }, ...newData }, {
+                new: true,
+            });
+            if (!user) {
+                return res.status(404).json({ message: "Data entry not found" });
+            }
+            res.json(user);
+        }
+        catch (error) {
+            console.error(error);
+            res.status(500).json({ message: "Server Error" });
+        }
+    }
+    static async get_user(req, res) {
+        try {
+            const User = await user_1.UserModel.find();
+            if (User.length == 0) {
+                return res.status(404).json({ message: "No User Found!" });
+            }
+            return res.status(200).json(User);
+        }
+        catch (error) {
+            return res.status(400).json({ message: "Something wnet wrong!" });
+        }
+    }
+    static async get_add_count(req, res) { }
+}
+exports.dataManagement = dataManagement;
+//# sourceMappingURL=dataManagement.js.map
