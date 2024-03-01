@@ -10,7 +10,6 @@ exports.default = () => {
     router.use("/update-user/:id", dataManagement_1.dataManagement.update_user);
     router.use("/add-user", dataManagement_1.dataManagement.add_user);
     router.use("/get-user", dataManagement_1.dataManagement.get_user);
-    router.use("/get-add-count/:id/", dataManagement_1.dataManagement.get_add_count);
     return router;
 };
 //# sourceMappingURL=data_routes.js.map

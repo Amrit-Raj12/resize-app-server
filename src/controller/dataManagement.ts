@@ -4,6 +4,8 @@ import { UserModel } from "../model/user"
 
 export class dataManagement {
   static async add_user(req: express.Request, res: express.Response) {
+    const start = process.hrtime() // Record the start time
+
     try {
       const { name, mobile, address, email } = req.body
       if (!name) {
@@ -38,16 +40,26 @@ export class dataManagement {
           .status(400)
           .json({ message: "Unable to Replace existing data!" })
       }
-      return res.status(201).json({ message: "New record added successfully!" })
+      const end = process.hrtime(start) // Record the end time
+      const executionTimeInMs = (end[0] * 1000 + end[1] / 1000000).toFixed(2) // Calculated execution time in milliseconds
+      return res.status(201).json({
+        message: "New record added successfully!",
+        executionTime: `${executionTimeInMs} ms`,
+      })
     } catch (error) {
       console.log(error)
       return res.status(400).json({ message: "Something went wrong!" })
+    } finally {
+      const end = process.hrtime(start) // Record the end time
+      const executionTimeInMs = (end[0] * 1000 + end[1] / 1000000).toFixed(2) // Calculate execution time in milliseconds
+      console.log(`add_user function executed in ${executionTimeInMs} ms`)
     }
   }
 
   static async update_user(req: express.Request, res: express.Response) {
     const id = req.params.id
     const newData = req.body
+    const start = process.hrtime() // Record the start time
 
     try {
       const user = await UserModel.findByIdAndUpdate(
@@ -61,25 +73,44 @@ export class dataManagement {
       if (!user) {
         return res.status(404).json({ message: "Data entry not found" })
       }
-
-      res.json(user)
+      const end = process.hrtime(start) // Record the end time
+      const executionTimeInMs = (end[0] * 1000 + end[1] / 1000000).toFixed(2) // Calculated execution time in milliseconds
+      return res.status(201).json({
+        message: "Updated successfully!",
+        executionTime: `${executionTimeInMs} ms`,
+      })
+      // res.json(user)
     } catch (error) {
       console.error(error)
       res.status(500).json({ message: "Server Error" })
+    } finally {
+      const end = process.hrtime(start) // Record the end time
+      const executionTimeInMs = (end[0] * 1000 + end[1] / 1000000).toFixed(2) // Calculate execution time in milliseconds
+      console.log(`add_user function executed in ${executionTimeInMs} ms`)
     }
   }
 
   static async get_user(req: express.Request, res: express.Response) {
+    const start = process.hrtime() // Record the start time
     try {
       const User = await UserModel.find()
       if (User.length == 0) {
         return res.status(404).json({ message: "No User Found!" })
       }
+
+      const end = process.hrtime(start) // Record the end time
+      const executionTimeInMs = (end[0] * 1000 + end[1] / 1000000).toFixed(2) // Calculated execution time in milliseconds
+      return res.status(200).json({
+        User,
+        executionTime: `${executionTimeInMs} ms`,
+      })
       return res.status(200).json(User)
     } catch (error) {
-      return res.status(400).json({ message: "Something wnet wrong!" })
+      return res.status(400).json({ message: "Something went wrong!" })
+    } finally {
+      const end = process.hrtime(start) // Record the end time
+      const executionTimeInMs = (end[0] * 1000 + end[1] / 1000000).toFixed(2) // Calculate execution time in milliseconds
+      console.log(`add_user function executed in ${executionTimeInMs} ms`)
     }
   }
-
-  static async get_add_count(req: express.Request, res: express.Response) {}
 }

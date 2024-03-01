@@ -7,7 +7,5 @@ export default (): express.Router => {
   router.use("/add-user", dataManagement.add_user)
   router.use("/get-user", dataManagement.get_user)
 
-  router.use("/get-add-count/:id/", dataManagement.get_add_count)
-
   return router
 }
